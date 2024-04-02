@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eliamosef</groupId>
-    <artifactId>scala_spark</artifactId>
-    <version>1.1</version>
+    <artifactId>scala_template</artifactId>
+    <version>1.2</version>
 
     <properties>
         <encoding>UTF-8</encoding>
@@ -105,7 +105,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/eliamosef/scala_spark</url>
+            <url>https://maven.pkg.github.com/eliamosef/scala_template</url>
         </repository>
     </distributionManagement>
 </project>
