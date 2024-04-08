@@ -5,8 +5,9 @@ import fr.mosef.scala.template.processor.Processor
 import fr.mosef.scala.template.processor.impl.ProcessorImpl
 import fr.mosef.scala.template.reader.Reader
 import fr.mosef.scala.template.reader.impl.ReaderImpl
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import fr.mosef.scala.template.writer.Writer
+import org.apache.spark.SparkConf
 import com.globalmentor.apache.hadoop.fs.BareLocalFileSystem
 import org.apache.hadoop.fs.FileSystem
 
@@ -34,9 +35,14 @@ object Main extends App with Job {
     }
   }
 
+  val conf = new SparkConf()
+  conf.set("spark.driver.memory", "64M")
+
   val sparkSession = SparkSession
     .builder
     .master(MASTER_URL)
+    .config(conf)
+    .appName("Scala Template")
     .enableHiveSupport()
     .getOrCreate()
   
@@ -52,7 +58,8 @@ object Main extends App with Job {
   val src_path = SRC_PATH
   val dst_path = DST_PATH
 
-  val inputDF = reader.read(src_path)
-  val processedDF = processor.process(inputDF)
+  val inputDF: DataFrame = reader.read(src_path)
+  val processedDF: DataFrame = processor.process(inputDF)
   writer.write(processedDF, "overwrite", dst_path)
+
 }

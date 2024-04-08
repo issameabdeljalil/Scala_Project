@@ -7,7 +7,8 @@ import org.apache.spark.sql.DataFrame
 class ProcessorImpl() extends Processor {
 
   def process(inputDF: DataFrame): DataFrame = {
-    inputDF.groupBy("group_key").sum("field1")
+    //inputDF.groupBy("group_key").sum("field1")
+    inputDF.groupBy("group_key").count()
   }
 
 }
