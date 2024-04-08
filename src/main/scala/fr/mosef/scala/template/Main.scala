@@ -7,6 +7,8 @@ import fr.mosef.scala.template.reader.Reader
 import fr.mosef.scala.template.reader.impl.ReaderImpl
 import org.apache.spark.sql.SparkSession
 import fr.mosef.scala.template.writer.Writer
+import com.globalmentor.apache.hadoop.fs.BareLocalFileSystem
+import org.apache.hadoop.fs.FileSystem
 
 object Main extends App with Job {
 
@@ -37,6 +39,12 @@ object Main extends App with Job {
     .master(MASTER_URL)
     .enableHiveSupport()
     .getOrCreate()
+  
+  sparkSession
+    .sparkContext
+    .hadoopConfiguration
+    .setClass("fs.file.impl",  classOf[BareLocalFileSystem], classOf[FileSystem])
+
 
   val reader: Reader = new ReaderImpl(sparkSession)
   val processor: Processor = new ProcessorImpl()
