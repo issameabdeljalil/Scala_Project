@@ -37,6 +37,7 @@ object Main extends App with Job {
 
   val conf = new SparkConf()
   conf.set("spark.driver.memory", "64M")
+  conf.set("spark.testing.memory", "471859200")
 
   val sparkSession = SparkSession
     .builder
