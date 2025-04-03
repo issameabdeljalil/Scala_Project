@@ -35,6 +35,13 @@ object Main extends App with Job {
     }
   }
 
+  val TRANSFORMATIONS: String = try {
+    cliArgs(3)
+  } catch {
+    case _: ArrayIndexOutOfBoundsException => ""
+  }
+
+
   val conf = new SparkConf()
   conf.set("spark.driver.memory", "64M")
   conf.set("spark.testing.memory", "471859200")
@@ -55,7 +62,7 @@ object Main extends App with Job {
 
 
   val reader: Reader = new ReaderImpl(sparkSession)
-  val processor: Processor = new ProcessorImpl()
+  val processor: Processor = new ProcessorImpl(TRANSFORMATIONS)
   val writer: Writer = new Writer()
   val src_path = SRC_PATH
   val dst_path = DST_PATH

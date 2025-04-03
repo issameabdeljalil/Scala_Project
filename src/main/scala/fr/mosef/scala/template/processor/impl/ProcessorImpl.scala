@@ -1,14 +1,24 @@
 package fr.mosef.scala.template.processor.impl
 
-
 import fr.mosef.scala.template.processor.Processor
-import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.{DataFrame, functions => F}
 
-class ProcessorImpl() extends Processor {
+class ProcessorImpl(transformations: String) extends Processor {
 
-  def process(inputDF: DataFrame): DataFrame = {
-    //inputDF.groupBy("group_key").sum("field1")
-    inputDF.groupBy("group_key").count()
+  override def process(inputDF: DataFrame): DataFrame = {
+    transformations.toLowerCase match {
+      case "sum" =>
+        inputDF.agg(F.sum("prix").alias("somme_prix"))
+
+      case "groupby" =>
+        inputDF.groupBy("group_key").agg(F.sum("prix").alias("somme_prix"))
+
+      case "sort" =>
+        inputDF.orderBy(F.asc("prix"))
+
+      case other =>
+        println(s"❌ Transformation inconnue: '$other'. Aucune modification appliquée.")
+        inputDF
+    }
   }
-
 }
