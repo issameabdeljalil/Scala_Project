@@ -30,6 +30,8 @@ class Writer {
   }
 
   def write(df: DataFrame, mode: String, path: String, format: String, delimiter: String, writeHeader: Boolean): Unit = {
+    println(s"Écriture avec format: $format, délimiteur: '$delimiter', en-tête: $writeHeader")
+
     format.toLowerCase match {
       case "csv" =>
         df

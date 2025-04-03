@@ -57,6 +57,8 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
   }
 
   def read(path: String, format: String, delimiter: String, hasHeader: Boolean): DataFrame = {
+    println(s"Lecture avec format: $format, délimiteur: '$delimiter', en-tête: $hasHeader")
+
     format.toLowerCase match {
       case "csv" =>
         sparkSession
