@@ -34,6 +34,13 @@ object Main extends App with Job {
       "./default/output-writer"
     }
   }
+  val TRANSFORMATION_TYPE: String = try {
+    cliArgs(3)
+  } catch {
+    case e: java.lang.ArrayIndexOutOfBoundsException => {
+      "count" // Transformation par défaut
+    }
+  }
 
   val conf = new SparkConf()
   conf.set("spark.driver.memory", "64M")
@@ -59,10 +66,15 @@ object Main extends App with Job {
   val writer: Writer = new Writer()
   val src_path = SRC_PATH
   val dst_path = DST_PATH
+  val transformation_type = TRANSFORMATION_TYPE
 
+  println(s"Lecture du fichier source: $src_path")
   val inputDF: DataFrame = reader.read(src_path)
-  val processedDF: DataFrame = processor.process(inputDF)
+
+  println(s"Application de la transformation: $transformation_type")
+  val processedDF: DataFrame = processor.process(inputDF, transformation_type)
+
+  println(s"Écriture des résultats dans: $dst_path")
   writer.write(processedDF, "overwrite", dst_path)
 
 }
-
