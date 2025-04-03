@@ -35,12 +35,18 @@ object Main extends App with Job {
     }
   }
 
+  // Ajout de l'argument pour le format de sortie (par défaut "csv")
+  val OUTPUT_FORMAT: String = try {
+    cliArgs(3).toLowerCase
+  } catch {
+    case _: ArrayIndexOutOfBoundsException => "csv" // Par défaut en CSV si l'argument n'est pas fourni
+  }
+
   val TRANSFORMATIONS: String = try {
-    cliArgs(3)
+    cliArgs(4)
   } catch {
     case _: ArrayIndexOutOfBoundsException => ""
   }
-
 
   val conf = new SparkConf()
   conf.set("spark.driver.memory", "64M")
@@ -60,7 +66,6 @@ object Main extends App with Job {
     .hadoopConfiguration
     .setClass("fs.file.impl",  classOf[BareLocalFileSystem], classOf[FileSystem])
 
-
   val reader: Reader = new ReaderImpl(sparkSession)
   val processor: Processor = new ProcessorImpl(TRANSFORMATIONS)
   val writer: Writer = new Writer()
@@ -69,7 +74,7 @@ object Main extends App with Job {
 
   val inputDF: DataFrame = reader.read(src_path)
   val processedDF: DataFrame = processor.process(inputDF)
-  writer.write(processedDF, "overwrite", dst_path)
 
+  // Appel à la méthode write avec le format choisi
+  writer.write(processedDF, format = OUTPUT_FORMAT, mode = "overwrite", path = dst_path)
 }
-

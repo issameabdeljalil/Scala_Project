@@ -1,0 +1,7 @@
+[
+  {"field1": 1, "group_key": "A", "prix": 100.5},
+  {"field1": 2, "group_key": "B", "prix": 150.0},
+  {"field1": 3, "group_key": "A", "prix": 220.0},
+  {"field1": 4, "group_key": "C", "prix": 122.5},
+  {"field1": 5, "group_key": "B", "prix": 124.0}
+]

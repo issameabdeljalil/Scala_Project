@@ -16,6 +16,9 @@ class ProcessorImpl(transformations: String) extends Processor {
       case "sort" =>
         inputDF.orderBy(F.asc("prix"))
 
+      case "groupby_avg" =>
+        inputDF.groupBy("group_key").agg(F.avg("prix").alias("moyenne_prix"))
+
       case other =>
         println(s"❌ Transformation inconnue: '$other'. Aucune modification appliquée.")
         inputDF
