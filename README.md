@@ -7,3 +7,8 @@
 
 Pour les données on prends celle dans src/main/ressources.
 Pour faires des tests, on lance le main avec modif configuration et une fois qu'on cosnidère que l'on a tout fini, on lance le Package de Maven puis une fois le jar récupéré, on peut lancer la commande java -cp ...jar avec les arguments indiqués
+
+
+Lancement du code: 
+java -cp scala_template-1.3.2-jar-with-dependencies.jar fr.mosef.scala.template.Main local "fichier input.csv/.parquet" "fichier output.csv/.parquet" sum/count/avg/median/distribution "sep/t;," 
+
