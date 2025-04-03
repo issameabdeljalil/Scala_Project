@@ -6,3 +6,4 @@
 - Il faut enfin dans le Writer que la personne puisse rentrer le type de fichier qu'elle veut en sortie et que le code écrive les sortie de la transformation dans ce type de fichier.
 
 Pour les données on prends celle dans src/main/ressources.
+Pour faires des tests, on lance le main avec modif configuration et une fois qu'on cosnidère que l'on a tout fini, on lance le Package de Maven puis une fois le jar récupéré, on peut lancer la commande java -cp ...jar avec les arguments indiqués
