@@ -14,17 +14,81 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
   }
 
   def read(path: String): DataFrame = {
-    sparkSession
-      .read
-      .option("sep", ",")
-      .option("inferSchema", "true")
-      .option("header", "true")
-      .format("csv")
-      .load(path)
+    // Détermine le format en fonction de l'extension du fichier
+    val format = getFileFormat(path)
+
+    format match {
+      case "csv" =>
+        sparkSession
+          .read
+          .option("sep", ",")
+          .option("inferSchema", "true")
+          .option("header", "true")
+          .format("csv")
+          .load(path)
+      case "parquet" =>
+        sparkSession
+          .read
+          .format("parquet")
+          .load(path)
+      case _ =>
+        throw new IllegalArgumentException(s"Format non supporté: $format")
+    }
+  }
+
+  def read(path: String, format: String): DataFrame = {
+    format.toLowerCase match {
+      case "csv" =>
+        sparkSession
+          .read
+          .option("sep", ",")
+          .option("inferSchema", "true")
+          .option("header", "true")
+          .format("csv")
+          .load(path)
+      case "parquet" =>
+        sparkSession
+          .read
+          .format("parquet")
+          .load(path)
+      case _ =>
+        throw new IllegalArgumentException(s"Format non supporté: $format")
+    }
+  }
+
+  def read(path: String, format: String, delimiter: String, hasHeader: Boolean): DataFrame = {
+    format.toLowerCase match {
+      case "csv" =>
+        sparkSession
+          .read
+          .option("sep", delimiter)
+          .option("inferSchema", "true")
+          .option("header", hasHeader)
+          .format("csv")
+          .load(path)
+      case "parquet" =>
+        sparkSession
+          .read
+          .format("parquet")
+          .load(path)
+      case _ =>
+        throw new IllegalArgumentException(s"Format non supporté: $format")
+    }
   }
 
   def read(): DataFrame = {
-    sparkSession.sql("SELECT 'Empty DataFrame for unit testing implementation")
+    sparkSession.sql("SELECT 'Empty DataFrame for unit testing implementation'")
   }
 
+  private def getFileFormat(path: String): String = {
+    val lowerPath = path.toLowerCase
+    if (lowerPath.endsWith(".csv")) {
+      "csv"
+    } else if (lowerPath.endsWith(".parquet")) {
+      "parquet"
+    } else {
+      // Par défaut, on suppose que c'est un CSV
+      "csv"
+    }
+  }
 }

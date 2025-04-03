@@ -42,6 +42,24 @@ object Main extends App with Job {
     }
   }
 
+  val INPUT_FORMAT: String = try {
+    cliArgs(4)
+  } catch {
+    case e: java.lang.ArrayIndexOutOfBoundsException => {
+      // Détermine le format en fonction de l'extension du fichier
+      getFileFormat(SRC_PATH)
+    }
+  }
+
+  val OUTPUT_FORMAT: String = try {
+    cliArgs(5)
+  } catch {
+    case e: java.lang.ArrayIndexOutOfBoundsException => {
+      // Détermine le format en fonction de l'extension du fichier
+      getFileFormat(DST_PATH)
+    }
+  }
+
   val conf = new SparkConf()
   conf.set("spark.driver.memory", "64M")
   conf.set("spark.testing.memory", "471859200")
@@ -67,14 +85,28 @@ object Main extends App with Job {
   val src_path = SRC_PATH
   val dst_path = DST_PATH
   val transformation_type = TRANSFORMATION_TYPE
+  val input_format = INPUT_FORMAT
+  val output_format = OUTPUT_FORMAT
 
-  println(s"Lecture du fichier source: $src_path")
-  val inputDF: DataFrame = reader.read(src_path)
+  println(s"Lecture du fichier source: $src_path (format: $input_format)")
+  val inputDF: DataFrame = reader.read(src_path, input_format)
 
   println(s"Application de la transformation: $transformation_type")
   val processedDF: DataFrame = processor.process(inputDF, transformation_type)
 
-  println(s"Écriture des résultats dans: $dst_path")
-  writer.write(processedDF, "overwrite", dst_path)
+  println(s"Écriture des résultats dans: $dst_path (format: $output_format)")
+  writer.write(processedDF, "overwrite", dst_path, output_format)
 
+  // Fonction utilitaire pour déterminer le format basé sur l'extension du fichier
+  private def getFileFormat(path: String): String = {
+    val lowerPath = path.toLowerCase
+    if (lowerPath.endsWith(".csv")) {
+      "csv"
+    } else if (lowerPath.endsWith(".parquet")) {
+      "parquet"
+    } else {
+      // Par défaut, on suppose que c'est un CSV
+      "csv"
+    }
+  }
 }
