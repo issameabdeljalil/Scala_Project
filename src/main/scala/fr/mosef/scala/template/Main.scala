@@ -19,6 +19,7 @@ object Main extends App with Job {
   } catch {
     case e: java.lang.ArrayIndexOutOfBoundsException => "local[1]"
   }
+
   val SRC_PATH: String = try {
     cliArgs(1)
   } catch {
@@ -27,6 +28,7 @@ object Main extends App with Job {
       sys.exit(1)
     }
   }
+
   val DST_PATH: String = try {
     cliArgs(2)
   } catch {
@@ -42,8 +44,15 @@ object Main extends App with Job {
     case _: ArrayIndexOutOfBoundsException => "csv" // Par défaut en CSV si l'argument n'est pas fourni
   }
 
+  // Ajout de l'argument pour le séparateur CSV (par défaut ",")
+  val CSV_SEPARATOR: String = try {
+    cliArgs(4) // Le séparateur est le 5ème argument
+  } catch {
+    case _: ArrayIndexOutOfBoundsException => "," // Par défaut la virgule
+  }
+
   val TRANSFORMATIONS: String = try {
-    cliArgs(4)
+    cliArgs(5)
   } catch {
     case _: ArrayIndexOutOfBoundsException => ""
   }
@@ -72,7 +81,8 @@ object Main extends App with Job {
   val src_path = SRC_PATH
   val dst_path = DST_PATH
 
-  val inputDF: DataFrame = reader.read(src_path)
+  // Passer le séparateur CSV au lecteur
+  val inputDF: DataFrame = reader.read(src_path, CSV_SEPARATOR)
   val processedDF: DataFrame = processor.process(inputDF)
 
   // Appel à la méthode write avec le format choisi

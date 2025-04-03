@@ -21,8 +21,8 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
       .load(path)
   }
 
-  // Implémentation de la méthode read(path) pour détecter l'extension et lire le fichier
-  def read(path: String): DataFrame = {
+  // Implémentation de la méthode read(path, csvSeparator) pour détecter l'extension et lire le fichier CSV avec un séparateur
+  def read(path: String, csvSeparator: String = ","): DataFrame = {
     // Extraire l'extension du fichier
     val extension = getFileExtension(path)
 
@@ -30,7 +30,7 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
       case "csv" =>
         sparkSession
           .read
-          .option("sep", ",")
+          .option("sep", csvSeparator)  // Utilisation du séparateur CSV passé en argument
           .option("inferSchema", "true")
           .option("header", "true")
           .format("csv")
