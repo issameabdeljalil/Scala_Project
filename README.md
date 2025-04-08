@@ -6,7 +6,7 @@ Une fois les codes Scala finalisés :
 
 - Aller dans **Maven > Lifecycle > package** pour générer le `.jar`
 
-- ⚠️ **Penser à mettre à jour la version** dans le fichier `pom.xml` avant de packager.
+- **Penser à mettre à jour la version** dans le fichier `pom.xml` avant de packager.
 
 ## Déploiement via GitHub
 
@@ -36,6 +36,6 @@ java -cp scala_template-2.0.1-jar-with-dependencies.jar fr.mosef.scala.template.
 - `","` → séparateur CSV (ex : `;`, `|`, etc.)
 - `sum` → transformation à appliquer (`sum`, `count`, etc.)
 
-## ✅ Résultat attendu
+## Résultat attendu
 
 À la fin de l’exécution, le dossier `output/` contiendra **quatre fichiers** dont celui correspondant à la transformation demandée (ex : `.json`, `.parquet`, etc.)
