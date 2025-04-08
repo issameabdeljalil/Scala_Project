@@ -1,7 +1,7 @@
-{"price": 44, "group_key": "A"}
-{"price": 2, "group_key": "A"}
-{"price": 112, "group_key": "B"}
-{"price": 38, "group_key": "B"}
-{"price": 12, "group_key": "C"}
-{"price": 42, "group_key": "C"}
-{"price": 54, "group_key": "E"}
+[
+  {"field1": 1, "group_key": "A", "prix": 100.5},
+  {"field1": 2, "group_key": "B", "prix": 150.0},
+  {"field1": 3, "group_key": "A", "prix": 220.0},
+  {"field1": 4, "group_key": "C", "prix": 122.5},
+  {"field1": 5, "group_key": "B", "prix": 124.0}
+]
