@@ -30,7 +30,7 @@ Dans un dossier local de test, tu dois avoir :
 java -cp scala_template-2.0.1-jar-with-dependencies.jar fr.mosef.scala.template.Main local input/test_file.csv output "," sum
 ```
 
-### 🛠️ Paramètres modifiables :
+### Paramètres modifiables :
 
 - `scala_template-2.0.1-jar-with-dependencies.jar` → adapter selon la version du `.jar`
 - `","` → séparateur CSV (ex : `;`, `|`, etc.)
