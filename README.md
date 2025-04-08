@@ -1,14 +1,10 @@
 # Scala Template
 
-- Il faut pouvoir dans le reader, entrer en argument le type de fichier (je crois) et que le code se lance en fonction du type de fichier entré
-     - Il y a 3 arguments : Où le code s'exécute (en local ou sur Yarn ou autre), le chemin vers les données et le chemin de sortie des données
-- Il faut ensuite effectuer au moins 2 transformations, que l'utilisateur peut rentrer en arguments et la fonction en question se lance.
-- Il faut enfin dans le Writer que la personne puisse rentrer le type de fichier qu'elle veut en sortie et que le code écrive les sortie de la transformation dans ce type de fichier.
+Pour lancer le code :  
+ - Ouvrir le terminal de commande
+ - Se placer dans le dossier Target 
+ - Lancer la commande :  java -cp scala_template-1.3.5-jar-with-dependencies.jar fr.mosef.scala.template.Main
 
-Pour les données on prends celle dans src/main/ressources.
-Pour faires des tests, on lance le main avec modif configuration et une fois qu'on cosnidère que l'on a tout fini, on lance le Package de Maven puis une fois le jar récupéré, on peut lancer la commande java -cp ...jar avec les arguments indiqués
-
-
-Lancement du code: 
-java -cp scala_template-1.3.2-jar-with-dependencies.jar fr.mosef.scala.template.Main local "fichier input.csv/.parquet" "fichier output.csv/.parquet" sum/count/avg/median/distribution "sep/t;," 
-
+# Pour modifier les arguments :
+ - Aller directement dans : src/main/resources/application.properties
+ - Modifier les paramètres souhaités

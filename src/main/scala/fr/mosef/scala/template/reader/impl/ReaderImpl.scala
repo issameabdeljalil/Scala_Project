@@ -14,7 +14,6 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
   }
 
   def read(path: String): DataFrame = {
-    // Détermine le format en fonction de l'extension du fichier
     val format = getFileFormat(path)
 
     format match {
@@ -31,6 +30,13 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
           .read
           .format("parquet")
           .load(path)
+
+      case "json" =>
+        sparkSession
+          .read
+          .format("json")
+          .load(path)
+
       case _ =>
         throw new IllegalArgumentException(s"Format non supporté: $format")
     }
@@ -50,6 +56,11 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
         sparkSession
           .read
           .format("parquet")
+          .load(path)
+      case "json" =>
+        sparkSession
+          .read
+          .format("json")
           .load(path)
       case _ =>
         throw new IllegalArgumentException(s"Format non supporté: $format")
@@ -72,6 +83,12 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
         sparkSession
           .read
           .format("parquet")
+          .load(path)
+
+      case "json" =>
+        sparkSession
+          .read
+          .format("json")
           .load(path)
       case _ =>
         throw new IllegalArgumentException(s"Format non supporté: $format")

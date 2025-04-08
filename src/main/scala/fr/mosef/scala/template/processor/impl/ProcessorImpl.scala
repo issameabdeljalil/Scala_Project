@@ -20,34 +20,34 @@ class ProcessorImpl() extends Processor {
         inputDF.groupBy("group_key").count()
 
       case "sum" =>
-        // Vérifie si la colonne field1 existe
-        if (inputDF.columns.contains("field1")) {
-          // Convertir explicitement field1 en double pour s'assurer que sum fonctionne correctement
-          inputDF.withColumn("field1", F.col("field1").cast(DoubleType))
+        // Vérifie si la colonne price existe
+        if (inputDF.columns.contains("price")) {
+          // Convertir explicitement price en double pour s'assurer que sum fonctionne correctement
+          inputDF.withColumn("price", F.col("price").cast(DoubleType))
             .groupBy("group_key")
-            .sum("field1")
+            .sum("price")
         } else {
-          throw new IllegalArgumentException("La colonne 'field1' n'existe pas dans le DataFrame")
+          throw new IllegalArgumentException("La colonne 'price' n'existe pas dans le DataFrame")
         }
 
       case "avg" =>
-        // Vérifie si la colonne field1 existe
-        if (inputDF.columns.contains("field1")) {
-          inputDF.withColumn("field1", F.col("field1").cast(DoubleType))
+        // Vérifie si la colonne price existe
+        if (inputDF.columns.contains("price")) {
+          inputDF.withColumn("price", F.col("price").cast(DoubleType))
             .groupBy("group_key")
-            .avg("field1")
+            .avg("price")
         } else {
-          throw new IllegalArgumentException("La colonne 'field1' n'existe pas dans le DataFrame")
+          throw new IllegalArgumentException("La colonne 'price' n'existe pas dans le DataFrame")
         }
 
       case "median" =>
-        // Vérifie si la colonne field1 existe
-        if (inputDF.columns.contains("field1")) {
-          // Convertir field1 en double
-          val dfWithDouble = inputDF.withColumn("field1", F.col("field1").cast(DoubleType))
+        // Vérifie si la colonne price existe
+        if (inputDF.columns.contains("price")) {
+          // Convertir price en double
+          val dfWithDouble = inputDF.withColumn("price", F.col("price").cast(DoubleType))
 
           // Calcul de la médiane par groupe
-          val windowSpec = Window.partitionBy("group_key").orderBy("field1")
+          val windowSpec = Window.partitionBy("group_key").orderBy("price")
           val dfWithRowNumber = dfWithDouble.withColumn("row_number", F.row_number().over(windowSpec))
           val dfWithCount = dfWithDouble.groupBy("group_key").count()
 
@@ -58,27 +58,23 @@ class ProcessorImpl() extends Processor {
           // Filtrer pour garder uniquement les valeurs médianes
           val medianDF = dfWithMedianIndex
             .filter(F.col("row_number") === F.col("median_index"))
-            .select("group_key", "field1")
-            .withColumnRenamed("field1", "median")
+            .select("group_key", "price")
+            .withColumnRenamed("price", "median")
 
           medianDF
         } else {
-          throw new IllegalArgumentException("La colonne 'field1' n'existe pas dans le DataFrame")
+          throw new IllegalArgumentException("La colonne 'price' n'existe pas dans le DataFrame")
         }
 
-      case "distribution" =>
-        // Distribution des valeurs en pourcentage par groupe
-        if (inputDF.columns.contains("field1")) {
-          val windowSpec = Window.partitionBy("group_key")
+      case "sort" =>
+        if (inputDF.columns.contains("price")) {
           inputDF
-            .withColumn("total", F.count("*").over(windowSpec))
-            .withColumn("percentage",
-              F.round(F.count("*").over(windowSpec.partitionBy("group_key", "field1")) / F.col("total") * 100, 2))
-            .select("group_key", "field1", "percentage")
-            .distinct()
+            .withColumn("price", F.col("price").cast(DoubleType))
+            .orderBy(F.col("group_key"), F.col("price"))
         } else {
-          throw new IllegalArgumentException("La colonne 'field1' n'existe pas dans le DataFrame")
+          throw new IllegalArgumentException("La colonne 'price' n'existe pas dans le DataFrame")
         }
+
 
       case _ =>
         throw new IllegalArgumentException(s"Type de transformation non supporté: $transformationType")

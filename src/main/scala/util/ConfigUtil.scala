@@ -32,6 +32,24 @@ object ConfigUtil {
     Option(properties.getProperty(key)).getOrElse(defaultValue)
   }
 
+  def loadPropertiesFromClasspath(fileName: String = "application.properties"): Properties = {
+    val properties = new Properties()
+    try {
+      val stream = getClass.getClassLoader.getResourceAsStream(fileName)
+      if (stream != null) {
+        properties.load(stream)
+        stream.close()
+        println(s"Configuration chargée depuis le classpath : $fileName")
+      } else {
+        println(s"Fichier de configuration introuvable dans le classpath : $fileName")
+      }
+    } catch {
+      case e: Exception =>
+        println(s"Erreur lors du chargement depuis le classpath : ${e.getMessage}")
+    }
+    properties
+  }
+
   def getPropertyAsBoolean(properties: Properties, key: String, defaultValue: Boolean): Boolean = {
     Option(properties.getProperty(key))
       .map(_.toLowerCase == "true")

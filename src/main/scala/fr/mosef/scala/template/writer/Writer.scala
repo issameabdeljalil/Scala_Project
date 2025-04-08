@@ -24,6 +24,10 @@ class Writer {
           .write
           .mode(mode)
           .parquet(path)
+
+      case "json" =>
+        df.write.mode(mode).json(path)
+
       case _ =>
         throw new IllegalArgumentException(s"Format d'écriture non supporté: $format")
     }
