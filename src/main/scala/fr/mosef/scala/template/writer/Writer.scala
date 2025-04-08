@@ -17,8 +17,13 @@ class Writer {
           .mode(mode)
           .parquet(path)
 
+      case "json" =>
+        df.write
+          .mode(mode)
+          .json(path)
+
       case _ =>
-        throw new IllegalArgumentException(s"❌ Format '$format' non pris en charge. Les formats pris en charge sont: csv, parquet.")
+        throw new IllegalArgumentException(s"Format '$format' non pris en charge. Les formats pris en charge sont: csv, parquet, json.")
     }
   }
 }
