@@ -1,9 +1,41 @@
-# Scala Template
+# Scala Project
 
-- Il faut pouvoir dans le reader, entrer en argument le type de fichier (je crois) et que le code se lance en fonction du type de fichier entré
-     - Il y a 3 arguments : Où le code s'exécute (en local ou sur Yarn ou autre), le chemin vers les données et le chemin de sortie des données
-- Il faut ensuite effectuer au moins 2 transformations, que l'utilisateur peut rentrer en arguments et la fonction en question se lance.
-- Il faut enfin dans le Writer que la personne puisse rentrer le type de fichier qu'elle veut en sortie et que le code écrive les sortie de la transformation dans ce type de fichier.
+## Build du projet
 
-Pour les données on prends celle dans src/main/ressources.
-Pour faires des tests, on lance le main avec modif configuration et une fois qu'on cosnidère que l'on a tout fini, on lance le Package de Maven puis une fois le jar récupéré, on peut lancer la commande java -cp ...jar avec les arguments indiqués
+Une fois les codes Scala finalisés :
+
+- Aller dans **Maven > Lifecycle > package** pour générer le `.jar`
+
+- **Penser à mettre à jour la version** dans le fichier `pom.xml` avant de packager.
+
+## Déploiement via GitHub
+
+1. Pousser les modifications sur GitHub (dans ce cadre sur la branche alexis)
+2. GitHub Actions lancera automatiquement le pipeline de build
+3. Le `.jar` sera ensuite disponible en **artifact téléchargeable**
+
+## Tester le `.jar` localement
+
+### Prérequis
+
+Dans un dossier local de test, tu dois avoir :
+
+- Le `.jar` (ex: `scala_template-2.0.1-jar-with-dependencies.jar`)
+- Un dossier `input/` contenant un fichier comme `test_file.csv` (extrait du dossier `resources`)
+- Un dossier `output/` vide
+
+### Exemple de commande
+
+```bash
+java -cp scala_template-2.0.1-jar-with-dependencies.jar fr.mosef.scala.template.Main local input/test_file.csv output "," sum
+```
+
+### Paramètres modifiables :
+
+- `scala_template-2.0.1-jar-with-dependencies.jar` → adapter selon la version du `.jar`
+- `","` → séparateur CSV (ex : `;`, `|`, etc.)
+- `sum` → transformation à appliquer (`sum`, `count`, etc.)
+
+## Résultat attendu
+
+À la fin de l’exécution, le dossier `output/` contiendra **quatre fichiers** dont celui correspondant à la transformation demandée (ex : `.json`, `.parquet`, etc.)
