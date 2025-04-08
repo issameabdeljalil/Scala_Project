@@ -1,9 +1,15 @@
-# Scala Template
+Scala Project
 
-- Il faut pouvoir dans le reader, entrer en argument le type de fichier (je crois) et que le code se lance en fonction du type de fichier entré
-     - Il y a 3 arguments : Où le code s'exécute (en local ou sur Yarn ou autre), le chemin vers les données et le chemin de sortie des données
-- Il faut ensuite effectuer au moins 2 transformations, que l'utilisateur peut rentrer en arguments et la fonction en question se lance.
-- Il faut enfin dans le Writer que la personne puisse rentrer le type de fichier qu'elle veut en sortie et que le code écrive les sortie de la transformation dans ce type de fichier.
+- Une fois les codes Scala finalisés > Maven > LifeCycle > Package permet de créer le .jar de la version associée (Attention à bien changer la version dans le fichier .pom)
 
-Pour les données on prends celle dans src/main/ressources.
-Pour faires des tests, on lance le main avec modif configuration et une fois qu'on cosnidère que l'on a tout fini, on lance le Package de Maven puis une fois le jar récupéré, on peut lancer la commande java -cp ...jar avec les arguments indiqués
+- Quand le .jar est bien dans le target, push sur le GitHub afin de passer par GitHub Action et obtenir les .jar sur GithUB
+
+- Pour tester le .jar, se placer dans un dossier disposant
+   - Du .jar
+   - D'un dossier input diposant des fichier présent dans resources de ce GitHub
+   - D'un dossier output vide
+
+- Ouvrir un terminal dans ce dossier, lancer la commande java -cp scala_template-2.0.1-jar-with-dependencies.jar fr.mosef.scala.template.Main local input/test_file.csv output "," sum
+   - On peut adapter la version du .jar en fonction de celle dont on dispose, le séparateur si l'on utilise un csv et la transformation à réaliser
+ 
+- Si tout fonctionne bien, le Dossier Output devrait se remplir de 4 fichier dont celui que l'on a demandé en sortie.
