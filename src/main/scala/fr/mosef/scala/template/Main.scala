@@ -14,10 +14,18 @@ import fr.mosef.scala.template.config.ConfigLoader
 
 object Main extends App with Job {
 
-  ConfigLoader.load()
+  // Extends d'utiliser le trait App interne à Scala qui permet de rendre tout ce code exécutable
+  // With Job, on hérite de Job, qui nécessite d'avoir certaines variables dans le code.
+
+  ConfigLoader.load() // Charge le/les paramètres souhaité(s) depuis le fichier application.properties
 
   val cliArgs = args
+
+  // On ajoute une sécurité par la suite : Si la longueur de args est supérieur à celle voulu alors on
+  // passe à la suite sinon il manque un ou plusieurs arguments.
+
   val MASTER_URL: String = if (cliArgs.length > 0) cliArgs(0) else "local[1]"
+
   override val src_path: String = if (cliArgs.length > 1) cliArgs(1) else {
     println("No input defined")
     sys.exit(1)
@@ -51,5 +59,5 @@ object Main extends App with Job {
   override val inputDF: DataFrame = reader.read(src_path, CSV_SEPARATOR)
   override val processedDF: DataFrame = processor.process(inputDF)
 
-  writer.write(processedDF, format = OUTPUT_FORMAT, mode = "overwrite", path = dst_path)
+  writer.write(processedDF, format = OUTPUT_FORMAT, path = dst_path)
 }
