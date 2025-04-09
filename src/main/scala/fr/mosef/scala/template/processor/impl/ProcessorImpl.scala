@@ -20,7 +20,7 @@ class ProcessorImpl(transformations: String) extends Processor {
         inputDF.groupBy("group_key").agg(F.avg("prix").alias("moyenne_prix"))
 
       case other =>
-        println(s"❌ Transformation inconnue: '$other'. Aucune modification appliquée.")
+        println(s"Transformation inconnue: '$other'. Aucune modification appliquée.")
         inputDF
     }
   }

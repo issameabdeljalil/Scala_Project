@@ -51,7 +51,7 @@ class ReaderImpl(sparkSession: SparkSession) extends Reader {
           .load(path)
 
       case _ =>
-        throw new IllegalArgumentException(s"❌ Format inconnu pour l'extension '$extension'. Les formats supportés sont: csv, json, parquet.")
+        throw new IllegalArgumentException(s"Format inconnu pour l'extension '$extension'. Les formats supportés sont: csv, json, parquet.")
     }
   }
 
