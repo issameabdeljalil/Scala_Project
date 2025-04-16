@@ -3,7 +3,9 @@ name: Maven Package with HDFS Test
 on:
   push:
     branches:
+      - 'main'
       - 'dev'
+      - 'alexis'
 
   release:
     types: [created]
@@ -26,7 +28,9 @@ jobs:
           server-id: github
 
       - name: Start HDFS with Docker Compose
-        run: docker-compose up -d
+        uses: isbang/compose-action@v1.4.1
+        with:
+          compose-file: "./docker-compose.yml"
 
       - name: Wait for HDFS to be ready
         run: sleep 30
