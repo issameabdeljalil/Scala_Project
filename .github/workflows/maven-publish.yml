@@ -3,9 +3,7 @@ name: Maven Package with HDFS Test
 on:
   push:
     branches:
-      - 'main'
       - 'dev'
-      - 'alexis'
 
   release:
     types: [created]
