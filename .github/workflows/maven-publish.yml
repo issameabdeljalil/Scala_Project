@@ -33,35 +33,45 @@ jobs:
 
           services:
             namenode:
-              image: apache/hadoop:3.3.4
+              image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
               container_name: hdfs-namenode
               hostname: namenode
               ports:
-                - "9000:9000"  # HDFS
-                - "9870:9870"  # WebUI
+                - "9000:9000"
+                - "9870:9870"
               environment:
                 - CLUSTER_NAME=hadoop-cluster
+                - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
               volumes:
-                - hdfs-namenode-data:/hadoop/dfs/name
-              command: ["sh", "-c", "mkdir -p /hadoop/dfs/name && /opt/hadoop/bin/hdfs namenode -format && /opt/hadoop/bin/hdfs --daemon start namenode && tail -f /dev/null"]
+                - hadoop_namenode:/hadoop/dfs/name
+              healthcheck:
+                test: ["CMD", "curl", "-f", "http://localhost:9870"]
+                interval: 30s
+                timeout: 10s
+                retries: 3
 
             datanode:
-              image: apache/hadoop:3.3.4
+              image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
               container_name: hdfs-datanode
               hostname: datanode
               depends_on:
                 - namenode
               ports:
-                - "9864:9864"  # Datanode WebUI
+                - "9864:9864"
               environment:
+                - CORE_CONF_fs_defaultFS=hdfs://namenode:9000
                 - SERVICE_PRECONDITION=namenode:9000
               volumes:
-                - hdfs-datanode-data:/hadoop/dfs/data
-              command: ["sh", "-c", "mkdir -p /hadoop/dfs/data && /opt/hadoop/bin/hdfs --daemon start datanode && tail -f /dev/null"]
+                - hadoop_datanode:/hadoop/dfs/data
+              healthcheck:
+                test: ["CMD", "curl", "-f", "http://localhost:9864"]
+                interval: 30s
+                timeout: 10s
+                retries: 3
 
           volumes:
-            hdfs-namenode-data:
-            hdfs-datanode-data:
+            hadoop_namenode:
+            hadoop_datanode:
           EOL
           
           cat docker-compose.yml
@@ -70,7 +80,7 @@ jobs:
         run: docker compose up -d
 
       - name: Wait for HDFS to be ready
-        run: sleep 60
+        run: sleep 90
 
       - name: Verify HDFS containers
         run: docker ps
@@ -80,13 +90,13 @@ jobs:
 
       - name: Create test directory in HDFS
         run: |
-          docker exec hdfs-namenode /opt/hadoop/bin/hdfs dfs -mkdir -p /test || true
+          docker exec hdfs-namenode hdfs dfs -mkdir -p /test || true
         continue-on-error: true
 
       - name: Copy test files to HDFS
         run: |
           docker cp src/main/resources/test_file.csv hdfs-namenode:/tmp/ || true
-          docker exec hdfs-namenode /opt/hadoop/bin/hdfs dfs -put /tmp/test_file.csv /test/ || true
+          docker exec hdfs-namenode hdfs dfs -put /tmp/test_file.csv /test/ || true
         continue-on-error: true
 
       - name: Publish to GitHub Packages Apache Maven

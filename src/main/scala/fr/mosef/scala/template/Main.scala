@@ -29,7 +29,7 @@ object Main extends App with Job {
   val CSV_SEPARATOR: String = if (cliArgs.length > 3) cliArgs(3) else ","
   val TRANSFORMATIONS: String = if (cliArgs.length > 4) cliArgs(4) else ""
   val USE_HDFS: Boolean = if (cliArgs.length > 5) cliArgs(5).toBoolean else false
-  val HDFS_URL: String = if (cliArgs.length > 6) cliArgs(6) else ConfigLoader.get("hdfs.url", "hdfs://localhost:9000")
+  val HDFS_URL: String = if (cliArgs.length > 6) cliArgs(6) else ConfigLoader.get("hdfs.url", "hdfs://namenode:9000")
 
   val OUTPUT_FORMAT: String = ConfigLoader.get("output.format", "csv")
 
