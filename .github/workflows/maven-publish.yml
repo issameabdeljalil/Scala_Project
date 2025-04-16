@@ -80,24 +80,30 @@ jobs:
         run: docker compose up -d
 
       - name: Wait for HDFS to be ready
-        run: sleep 90
+        run: sleep 60
 
-      - name: Verify HDFS containers
-        run: docker ps
+      - name: Verify HDFS is running
+        run: |
+          docker exec hdfs-namenode hdfs dfsadmin -report
+
+      - name: Prepare test data
+        run: |
+          docker exec hdfs-namenode hdfs dfs -mkdir -p /test
+          docker cp src/main/resources/test_file.csv hdfs-namenode:/tmp/
+          docker exec hdfs-namenode hdfs dfs -put /tmp/test_file.csv /test/
+          docker exec hdfs-namenode hdfs dfs -ls /test
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Create test directory in HDFS
+      - name: Test HDFS functionality
         run: |
-          docker exec hdfs-namenode hdfs dfs -mkdir -p /test || true
-        continue-on-error: true
+          java -cp target/scala_template-*-jar-with-dependencies.jar fr.mosef.scala.template.Main local[1] hdfs://namenode:9000/test/test_file.csv hdfs://namenode:9000/test/output "," sum true hdfs://namenode:9000
 
-      - name: Copy test files to HDFS
+      - name: Verify output in HDFS
         run: |
-          docker cp src/main/resources/test_file.csv hdfs-namenode:/tmp/ || true
-          docker exec hdfs-namenode hdfs dfs -put /tmp/test_file.csv /test/ || true
-        continue-on-error: true
+          docker exec hdfs-namenode hdfs dfs -ls /test/output
+          docker exec hdfs-namenode hdfs dfs -cat /test/output/part* || echo "No part files found"
 
       - name: Publish to GitHub Packages Apache Maven
         run: mvn deploy
