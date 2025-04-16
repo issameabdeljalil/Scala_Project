@@ -6,6 +6,7 @@ import fr.mosef.scala.template.processor.impl.ProcessorImpl
 import fr.mosef.scala.template.reader.Reader
 import fr.mosef.scala.template.reader.impl.ReaderImpl
 import fr.mosef.scala.template.writer.Writer
+import fr.mosef.scala.template.hdfs.HDFSConnector
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.SparkConf
 import com.globalmentor.apache.hadoop.fs.BareLocalFileSystem
@@ -14,15 +15,9 @@ import fr.mosef.scala.template.config.ConfigLoader
 
 object Main extends App with Job {
 
-  // Extends d'utiliser le trait App interne à Scala qui permet de rendre tout ce code exécutable
-  // With Job, on hérite de Job, qui nécessite d'avoir certaines variables dans le code.
-
-  ConfigLoader.load() // Charge le/les paramètres souhaité(s) depuis le fichier application.properties
+  ConfigLoader.load()
 
   val cliArgs = args
-
-  // On ajoute une sécurité par la suite : Si la longueur de args est supérieur à celle voulu alors on
-  // passe à la suite sinon il manque un ou plusieurs arguments.
 
   val MASTER_URL: String = if (cliArgs.length > 0) cliArgs(0) else "local[1]"
 
@@ -33,7 +28,8 @@ object Main extends App with Job {
   override val dst_path: String = if (cliArgs.length > 2) cliArgs(2) else "./default/output-writer"
   val CSV_SEPARATOR: String = if (cliArgs.length > 3) cliArgs(3) else ","
   val TRANSFORMATIONS: String = if (cliArgs.length > 4) cliArgs(4) else ""
-
+  val USE_HDFS: Boolean = if (cliArgs.length > 5) cliArgs(5).toBoolean else false
+  val HDFS_URL: String = if (cliArgs.length > 6) cliArgs(6) else ConfigLoader.get("hdfs.url", "hdfs://localhost:9000")
 
   val OUTPUT_FORMAT: String = ConfigLoader.get("output.format", "csv")
 
@@ -42,15 +38,27 @@ object Main extends App with Job {
     .set("spark.testing.memory", "471859200")
     .set("spark.driver.host", "localhost")
 
+  // Configuration HDFS pour Spark
+  if (USE_HDFS || src_path.startsWith("hdfs://") || dst_path.startsWith("hdfs://")) {
+    conf.set("spark.hadoop.fs.defaultFS", HDFS_URL)
+  }
+
   val sparkSession: SparkSession = SparkSession.builder
     .master(MASTER_URL)
     .config(conf)
-    .appName("Scala Template")
+    .appName("Scala Template with HDFS")
     .enableHiveSupport()
     .getOrCreate()
 
-  sparkSession.sparkContext.hadoopConfiguration
-    .setClass("fs.file.impl", classOf[BareLocalFileSystem], classOf[FileSystem])
+  // Configurer Hadoop pour le système de fichiers local ou HDFS selon le besoin
+  if (!USE_HDFS && !src_path.startsWith("hdfs://") && !dst_path.startsWith("hdfs://")) {
+    sparkSession.sparkContext.hadoopConfiguration
+      .setClass("fs.file.impl", classOf[BareLocalFileSystem], classOf[FileSystem])
+  } else {
+    // Initialiser le connecteur HDFS
+    val hdfsConnector = new HDFSConnector(HDFS_URL)
+    println(s"Connected to HDFS at $HDFS_URL")
+  }
 
   override val reader: Reader = new ReaderImpl(sparkSession)
   override val processor: Processor = new ProcessorImpl(TRANSFORMATIONS)
