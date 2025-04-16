@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hdfs-namenode
+  namespace: hadoop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hdfs-namenode
+  template:
+    metadata:
+      labels:
+        app: hdfs-namenode
+    spec:
+      containers:
+        - name: namenode
+          image: apache/hadoop:3.3.4
+          ports:
+            - containerPort: 9000
+            - containerPort: 9870
+          volumeMounts:
+            - name: hdfs-namenode-storage
+              mountPath: /hadoop/dfs/name
+          env:
+            - name: CLUSTER_NAME
+              value: hadoop-cluster
+            - name: HDFS_NAMENODE_USER
+              value: root
+          command: ["sh", "-c"]
+          args:
+            - "mkdir -p /hadoop/dfs/name && 
+           /opt/hadoop/bin/hdfs namenode -format &&
+           /opt/hadoop/bin/hdfs --daemon start namenode &&
+           tail -f /dev/null"
+      volumes:
+        - name: hdfs-namenode-storage
+          persistentVolumeClaim:
+            claimName: hdfs-namenode-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hdfs-datanode
+  namespace: hadoop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hdfs-datanode
+  template:
+    metadata:
+      labels:
+        app: hdfs-datanode
+    spec:
+      containers:
+        - name: datanode
+          image: apache/hadoop:3.3.4
+          ports:
+            - containerPort: 9864
+          volumeMounts:
+            - name: hdfs-datanode-storage
+              mountPath: /hadoop/dfs/data
+          env:
+            - name: HDFS_DATANODE_USER
+              value: root
+          command: ["sh", "-c"]
+          args:
+            - "mkdir -p /hadoop/dfs/data && 
+           /opt/hadoop/bin/hdfs --daemon start datanode &&
+           tail -f /dev/null"
+      volumes:
+        - name: hdfs-datanode-storage
+          persistentVolumeClaim:
+            claimName: hdfs-datanode-pvc

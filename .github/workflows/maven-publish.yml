@@ -1,21 +1,15 @@
-# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
-# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
-
-name: Maven Package
+name: Maven Package with HDFS Test
 
 on:
   push:
     branches:
-      - 'main'
       - 'dev'
-      - 'alexis'
 
   release:
     types: [created]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -31,8 +25,31 @@ jobs:
           distribution: 'temurin'
           server-id: github
 
+      - name: Start HDFS with Docker Compose
+        run: docker-compose up -d
+
+      - name: Wait for HDFS to be ready
+        run: sleep 30
+
+      - name: Create test directory in HDFS
+        run: docker exec hdfs-namenode /opt/hadoop/bin/hdfs dfs -mkdir -p /test
+
+      - name: Copy test files to HDFS
+        run: |
+          docker cp src/main/resources/test_file.csv hdfs-namenode:/tmp/
+          docker exec hdfs-namenode /opt/hadoop/bin/hdfs dfs -put /tmp/test_file.csv /test/
+
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+
+      - name: Test HDFS Integration
+        run: |
+          java -cp target/scala_template-*-jar-with-dependencies.jar fr.mosef.scala.template.Main local hdfs://localhost:9000/test/test_file.csv hdfs://localhost:9000/test/output "," sum true hdfs://localhost:9000
+
+      - name: Verify Output
+        run: |
+          docker exec hdfs-namenode /opt/hadoop/bin/hdfs dfs -ls /test/output
+
       - name: Publish to GitHub Packages Apache Maven
         run: mvn deploy
         env:

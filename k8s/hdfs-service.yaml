@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hdfs-namenode
+  namespace: hadoop
+spec:
+  selector:
+    app: hdfs-namenode
+  ports:
+    - name: hdfs
+      port: 9000
+      targetPort: 9000
+    - name: web
+      port: 9870
+      targetPort: 9870
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hdfs-datanode
+  namespace: hadoop
+spec:
+  selector:
+    app: hdfs-datanode
+  ports:
+    - name: datanode
+      port: 9864
+      targetPort: 9864
+  type: ClusterIP
