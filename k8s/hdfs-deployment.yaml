@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: namenode
-          image: apache/hadoop:3.3.4
+          image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
           ports:
             - containerPort: 9000
             - containerPort: 9870
@@ -55,7 +55,7 @@ spec:
     spec:
       containers:
         - name: datanode
-          image: apache/hadoop:3.3.4
+          image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
           ports:
             - containerPort: 9864
           volumeMounts:

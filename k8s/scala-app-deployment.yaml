@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scala-app
+  namespace: hadoop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scala-app
+  template:
+    metadata:
+      labels:
+        app: scala-app
+    spec:
+      containers:
+        - name: scala-app
+          image: scala-hdfs-app:latest
+          imagePullPolicy: Never
+          env:
+            - name: HDFS_NAMENODE_HOST
+              value: "hdfs-simple.hadoop"
+            - name: HDFS_NAMENODE_PORT
+              value: "9000"
